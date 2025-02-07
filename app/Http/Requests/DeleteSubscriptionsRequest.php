@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PricesRequest extends FormRequest
+class DeleteSubscriptionsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,7 @@ class PricesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'symbol' => 'required|string',
-            'limit' => 'required|integer',
-            'end' => 'nullable|date'
+            'email' => 'required|email',
         ];
     }
 }
