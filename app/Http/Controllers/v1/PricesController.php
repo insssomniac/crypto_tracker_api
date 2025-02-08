@@ -6,7 +6,6 @@ use App\DataProviders\Bitfinex;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PricesRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use \Exception;
 
 class PricesController extends Controller
@@ -14,12 +13,7 @@ class PricesController extends Controller
     public function index(PricesRequest $request, Bitfinex $provider): JsonResponse
     {
         try {
-            if ($request->end) {
-                $carbonDate = Carbon::parse($request->end);
-                $timestampMs = $carbonDate->timestamp * 1000;
-            }
-
-            $prices = $provider->getPrices($request->symbol, $request->limit, $timestampMs ?? null);
+            $prices = $provider->getPrices($request->symbol, $request->period, $request->shift);
 
             return response()->json($prices);
         } catch (Exception $e) {

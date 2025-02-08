@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
+    use HasFactory;
+
     public const ALERT_TYPE_PRICE_ABOVE = 'priceAbove';
     public const ALERT_TYPE_PERCENT_CHANGE = 'percentChange';
 
@@ -32,5 +35,10 @@ class Subscription extends Model
     public function scopeByEmail(Builder $query, string $email)
     {
         return $query->where('email', $email);
+    }
+
+    public function scopeByAlertType(Builder $query, string $alertType)
+    {
+        return $query->where('alert_type', $alertType);
     }
 }

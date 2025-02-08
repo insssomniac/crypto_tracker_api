@@ -13,35 +13,49 @@ class PricesTest extends TestCase
         // Arrange
         $payload = [
             [
-                "tBTCUSD",
-                95775,
-                null,
-                95776,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                1738962003000
-            ]
+                1739005200000,
+                95976,
+                96160,
+                96160,
+                95976,
+                2.25736752
+            ],
+            [
+                1739001600000,
+                96282,
+                95976,
+                96339,
+                95971,
+                2.76385881
+            ],
         ];
 
         $this->mockGuzzle($payload);
 
         // Act
-        $response = $this->get('/api/v1/prices?symbol=tBTCUSD&limit=1');
+        $response = $this->get(route('prices.get', [
+            'symbol' => 'tBTCUSD',
+            'period' => 2
+        ]));
 
         // Assert
         $response->assertStatus(200);
         $response->assertJson([
             [
-                'symbol' => 'tBTCUSD',
-                'bid' => 95775,
-                'ask' => 95776,
-                'time' => '2025-02-07T21:00:03+00:00',
+                "symbol" => "tBTCUSD",
+                "open" => 95976,
+                "close" => 96160,
+                "high" => 96160,
+                "low" => 95976,
+                "time" => "2025-02-08T09:00:00+00:00"
+            ],
+            [
+                "symbol" => "tBTCUSD",
+                "open" => 96282,
+                "close" => 95976,
+                "high" => 96339,
+                "low" => 95971,
+                "time" => "2025-02-08T08:00:00+00:00"
             ]
         ]);
     }

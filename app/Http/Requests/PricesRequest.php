@@ -24,8 +24,8 @@ class PricesRequest extends FormRequest
     {
         return [
             'symbol' => 'required|string',
-            'limit' => 'required|integer',
-            'end' => 'nullable|date'
+            'period' => 'required|integer',
+            'shift' => 'nullable|integer',
         ];
     }
 }

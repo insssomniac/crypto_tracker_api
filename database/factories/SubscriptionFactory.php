@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class SubscriptionFactory extends Factory
 {
+    protected $model = Subscription::class;
+
     /**
      * Define the model's default state with alert type 'priceAbove'.
      *
@@ -31,8 +33,8 @@ class SubscriptionFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'price_limit' => null,
-            'percent_change' => 2,
-            'time_interval' => 1,
+            'percent_change' => 1,
+            'time_interval' => 6,
             'alert_type' => Subscription::ALERT_TYPE_PERCENT_CHANGE,
         ]);
     }
