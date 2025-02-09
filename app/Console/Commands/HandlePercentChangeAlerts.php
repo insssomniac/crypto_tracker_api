@@ -40,7 +40,7 @@ class HandlePercentChangeAlerts extends Command
 
                 // Select only subscriptions which meets condition
                 $subscriptionsToNotify = Subscription::byAlertType(Subscription::ALERT_TYPE_PERCENT_CHANGE)
-                    ->where('time_interval', $intervals)
+                    ->where('time_interval', $interval)
                     ->where('percent_change', '<=', $percentChange)
                     ->get();
 
