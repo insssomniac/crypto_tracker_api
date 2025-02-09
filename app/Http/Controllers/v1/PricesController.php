@@ -17,6 +17,7 @@ class PricesController extends Controller
 
             return response()->json($prices);
         } catch (Exception $e) {
+            logger()->error($e->getMessage(), $e->getTrace());
 
             return response()->json(['errors' => 'Failed to retrieve prices. Please try again later.'], 500);
         }

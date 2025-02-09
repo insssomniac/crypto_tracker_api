@@ -22,7 +22,7 @@ class SubscriptionFactory extends Factory
         return [
             'email' => fake()->email(),
             'symbol' => 'tBTCUSD',
-            'price_limit' => '95779',
+            'price_limit' => fake()->numberBetween(90000, 110000),
             'percent_change' => null,
             'time_interval' => null,
             'alert_type' => Subscription::ALERT_TYPE_PRICE_ABOVE,

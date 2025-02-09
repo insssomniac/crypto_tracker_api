@@ -17,7 +17,14 @@ class SubscriptionsController extends Controller
         return response()->json($subscription);
     }
 
-    public function destroy(DeleteSubscriptionsRequest $request): JsonResponse
+    public function destroy(Subscription $subscription): JsonResponse
+    {
+        $subscription->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function bulkDestroy(DeleteSubscriptionsRequest $request): JsonResponse
     {
         Subscription::byEmail($request->email)->delete();
 

@@ -95,4 +95,36 @@ class SubscriptionsTest extends TestCase
         ]);
         $this->assertDatabaseMissing('subscriptions', $payload);
     }
+
+    #[Test]
+    public function it_deletes_subscriptions_by_email()
+    {
+        // Arrange
+        Subscription::factory()->times(3)->create(
+            [
+                'email' => 'test_customer@test.com'
+            ]
+        );
+
+        // Act
+        $response = $this->delete(route('subscriptions.bulk.destroy', ['email' => 'test_customer@test.com']));
+
+        // Assert
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('subscriptions', ['email' => 'test_customer@test.com']);
+    }
+
+    #[Test]
+    public function it_deletes_subscription_by_id()
+    {
+        // Arrange
+        $subscription = Subscription::factory()->create();
+
+        // Act
+        $response = $this->delete(route('subscriptions.destroy', $subscription->id));
+
+        // Assert
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('subscriptions', ['id' => $subscription->id]);
+    }
 }
