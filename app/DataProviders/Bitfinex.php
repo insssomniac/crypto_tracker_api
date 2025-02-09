@@ -2,16 +2,19 @@
 
 namespace App\DataProviders;
 
+use App\Exceptions\RateLimitException;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 class Bitfinex
 {
     private string $apiVersion = 'v2';
     private string $apiUrl = 'https://api-pub.bitfinex.com/';
+    private int $maxAttempts = 5;
 
     private Client $client;
 
@@ -30,6 +33,8 @@ class Bitfinex
      * @param int $period
      * @param int|null $periodsShift
      * @return array
+     * @throws GuzzleException|RateLimitException
+     * @throws Exception
      */
     public function getPrices(string $symbol, int $period, ?int $periodsShift = 0): array
     {
@@ -39,21 +44,41 @@ class Bitfinex
             return $cachedData;
         }
 
-        $prices = $this->requestPrices($symbol, $period, $periodsShift);
+        $attempts = 0;
+        $backoff = 1;
 
-        // If shift is indicated (requesting historical data), then cache data for an hour
-        // If shift is null, then cache data for 1 minute (every minute updates)
-        $cacheTime = $periodsShift ? 60 : 1;
+        while ($attempts < $this->maxAttempts) {
+            try {
+                $this->throttleRequests('bitfinex_candles_request');
+                $prices = $this->requestPrices($symbol, $period, $periodsShift);
 
-        Cache::put(Carbon::now()->format('YmdH_') . $symbol . '_' . $period . '_' . $periodsShift, $prices, $cacheTime);
+                // If shift is indicated (requesting historical data), then cache data for an hour
+                // If shift is null, then cache data for 1 minute (every minute updates)
+                $cacheTime = $periodsShift ? 60 : 1;
 
-        return $prices;
+                Cache::put(Carbon::now()->format('YmdH_') . $symbol . '_' . $period . '_' . $periodsShift, $prices, $cacheTime);
+
+                return $prices;
+
+            } catch (RateLimitException $e) {
+                $attempts++;
+                if ($attempts < $this->maxAttempts) {
+                    sleep($backoff);
+                    $backoff *= 2;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        throw new Exception('Failed to retrieve prices after maximum attempts');
     }
 
     /**
      * @param string $symbol
      * @param int $period
      * @return array
+     * @throws GuzzleException|RateLimitException
      */
     public function getExtremesForPeriod(string $symbol, int $period): array
     {
@@ -72,7 +97,7 @@ class Bitfinex
      * @return array
      * @throws Exception | GuzzleException
      */
-    protected function requestPrices(string $symbol, int $period, ?int $periodsShift = 0)
+    protected function requestPrices(string $symbol, int $period, ?int $periodsShift = 0): array
     {
         $query = ['limit' => $period];
 
@@ -114,5 +139,17 @@ class Bitfinex
         }
 
         return $result;
+    }
+
+    /**
+     * @throws RateLimitException
+     */
+    private function throttleRequests($key): void
+    {
+        if (!RateLimiter::attempt($key, 15, function() {
+            return true;
+        }, 30)) {
+            throw new RateLimitException('Rate limit exceeded');
+        }
     }
 }
