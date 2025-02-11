@@ -12,7 +12,7 @@ class PriceAboveAlert extends Notification
     use Queueable;
 
     public Subscription $subscription;
-    private int|float $priceLevel;
+    public int|float $priceLevel;
 
     /**
      * Create a new notification instance.

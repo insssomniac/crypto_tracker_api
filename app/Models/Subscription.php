@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Subscription extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     public const ALERT_TYPE_PRICE_ABOVE = 'priceAbove';
     public const ALERT_TYPE_PERCENT_CHANGE = 'percentChange';

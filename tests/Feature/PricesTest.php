@@ -59,4 +59,32 @@ class PricesTest extends TestCase
             ]
         ]);
     }
+
+    #[Test]
+    public function it_returns_422_for_missing_parameters(): void
+    {
+        // Act
+        $response = $this->get(route('prices.get'), ['accept' => 'Application/json']);
+
+        // Assert
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['symbol', 'period']);
+    }
+
+    #[Test]
+    public function it_handles_exception_from_provider(): void
+    {
+        // Arrange
+        $this->mockGuzzle([], 500); // Simulate an error from the data provider
+
+        // Act
+        $response = $this->get(route('prices.get', [
+            'symbol' => 'tBTCUSD',
+            'period' => 2
+        ]));
+
+        // Assert
+        $response->assertStatus(500);
+        $response->assertJson(['errors' => 'Failed to retrieve prices. Please try again later.']);
+    }
 }

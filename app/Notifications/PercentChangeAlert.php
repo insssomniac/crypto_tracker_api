@@ -12,10 +12,10 @@ class PercentChangeAlert extends Notification
     use Queueable;
 
     public Subscription $subscription;
-    private int|float $percentChange;
-    private int $interval;
-    private int|float $highestPrice;
-    private int|float $lowestPrice;
+    public int|float $percentChange;
+    public int $interval;
+    public int|float $highestPrice;
+    public int|float $lowestPrice;
 
     /**
      * Create a new notification instance.

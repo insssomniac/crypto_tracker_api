@@ -56,7 +56,7 @@ class Bitfinex
                 // If shift is null, then cache data for 1 minute (every minute updates)
                 $cacheTime = $periodsShift ? 60 : 1;
 
-                Cache::put(Carbon::now()->format('YmdH_') . $symbol . '_' . $period . '_' . $periodsShift, $prices, $cacheTime);
+                Cache::put(Carbon::now()->format('mdH_') . $symbol . '_' . $period . '_' . $periodsShift, $prices, $cacheTime);
 
                 return $prices;
 

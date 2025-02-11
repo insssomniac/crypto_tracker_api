@@ -67,10 +67,10 @@ class SubscriptionsTest extends TestCase
         ];
 
         // Act
-        $response = $this->post(route('subscriptions.store', $payload));
+        $response = $this->post(route('subscriptions.store'), $payload, ['accept' => 'Application/json']);
 
         // Assert
-        $response->assertSessionHasErrors(['price_limit' => 'The price limit field is required when alert type is priceAbove.']);
+        $response->assertJsonValidationErrors(['price_limit' => 'The price limit field is required when alert type is priceAbove.']);
         $this->assertDatabaseMissing('subscriptions', $payload);
     }
 
@@ -86,10 +86,10 @@ class SubscriptionsTest extends TestCase
         ];
 
         // Act
-        $response = $this->post(route('subscriptions.store', $payload));
+        $response = $this->post(route('subscriptions.store'), $payload, ['accept' => 'Application/json']);
 
         // Assert
-        $response->assertSessionHasErrors([
+        $response->assertJsonValidationErrors([
             'percent_change' => 'The percent change field is required when alert type is percentChange.',
             'time_interval' => 'The time interval field is required when alert type is percentChange.'
         ]);
