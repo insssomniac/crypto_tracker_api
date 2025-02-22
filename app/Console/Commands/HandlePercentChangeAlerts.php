@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\DataProviders\Bitfinex;
 use App\Models\Subscription;
 use App\Notifications\PercentChangeAlert;
+use App\Notifications\PriceAboveAlert;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 
@@ -46,11 +47,18 @@ class HandlePercentChangeAlerts extends Command
 
                 // Notify subscribers
                 foreach ($subscriptionsToNotify as $subscription) {
-                    Notification::route('mail', $subscription->email)
-                        ->notify(new PercentChangeAlert($subscription, $percentChange, $interval, $extremePrices['max'], $extremePrices['min']));
+                    try {
+                        /** @var Subscription $subscription */
+                        $subscription
+                            ->notify((new PercentChangeAlert($subscription, $percentChange, $interval, $extremePrices['max'], $extremePrices['min']))
+                                ->onQueue('default'));
 
-                    // Delete subscription after notifying
-                    $subscription->delete();
+                        // Delete subscription after notifying
+                        $subscription->delete();
+                    } catch (\Exception $e) {
+                        logger()->error('Subscription ' . $subscription->id . ' notification failed: ' . $e->getMessage());
+                        continue;
+                    }
                 }
             }
         }

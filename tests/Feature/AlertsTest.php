@@ -46,10 +46,12 @@ class AlertsTest extends TestCase
 
         // Assert
         Notification::assertSentTo(
-            new AnonymousNotifiable(),
+            $subscription,
             PriceAboveAlert::class,
-            function ($notification) use ($subscription) {
-                return $notification->subscription->is($subscription);
+            function ($notification, $channels) use ($subscription) {
+                return $notification->onQueue('default')
+                    && $channels[0] === 'mail'
+                    && $notification->subscription->is($subscription);
             }
         );
 
@@ -91,10 +93,12 @@ class AlertsTest extends TestCase
 
         // Assert
         Notification::assertSentTo(
-            new AnonymousNotifiable(),
+            $subscription,
             PercentChangeAlert::class,
-            function ($notification) use ($subscription) {
-                return $notification->subscription->is($subscription);
+            function ($notification, $channels) use ($subscription) {
+                return $notification->onQueue('default')
+                    && $channels[0] === 'mail'
+                    && $notification->subscription->is($subscription);
             }
         );
 

@@ -4,10 +4,12 @@ namespace App\Notifications;
 
 use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
-class PriceAboveAlert extends Notification
+class PriceAboveAlert extends Notification implements ShouldQueue
 {
     use Queueable;
 

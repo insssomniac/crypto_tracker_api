@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Subscription;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PercentChangeAlert extends Notification
+class PercentChangeAlert extends Notification implements ShouldQueue
 {
     use Queueable;
 
